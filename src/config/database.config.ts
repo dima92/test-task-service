@@ -5,6 +5,8 @@ import { User } from '../app/user/entities/user.entity';
 import { Role } from '../app/roles/entities/role.entity';
 import { Image } from '../app/image/entities/image.entity';
 
+import { $migration1683511464095 } from '../../migrations/1683511464095-$migration';
+
 const databaseConfig: PostgresConnectionOptions = {
   type: 'postgres',
   host: process.env.POSTGRES_HOST,
@@ -14,7 +16,7 @@ const databaseConfig: PostgresConnectionOptions = {
   database: process.env.POSTGRES_DB,
   entities: [User, Role, Image],
   synchronize: false,
-  migrations: [],
+  migrations: [$migration1683511464095],
 };
 
 export default databaseConfig;
