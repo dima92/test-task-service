@@ -1,7 +1,9 @@
 import { IsString, MinLength } from 'class-validator';
 
-import { UserDto } from '../../user/dto/user.dto';
+// ========================== dto ==========================
+import { UserDto } from 'src/app/users/dtos/user.dto';
 
+// ========================== swagger ==========================
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UserSignUpDto extends UserDto {

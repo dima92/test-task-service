@@ -7,18 +7,22 @@ import {
   OneToOne,
 } from 'typeorm';
 
-import { UuidEntity } from '../../../shared/entities/uuid.entity';
-import { Role } from '../../roles/entities/role.entity';
-import { Image } from '../../image/entities/image.entity';
+// ========================== entities ==========================
+import { UUIDEntity } from '../../../shared/entities/uuid.entity';
+import { RoleEntity } from '../../roles/entities/role.entity';
+import { ImageEntity } from '../../image/entities/image.entity';
 
+// ========================== enums ==========================
 import { UserRoles } from '../../../shared/types/user-roles.enum';
 
+// ========================== swagger ==========================
 import { ApiProperty } from '@nestjs/swagger';
+import { Blob } from 'buffer';
 
 @Entity({ name: 'users' })
-export class User extends UuidEntity {
+export class UserEntity extends UUIDEntity {
   @ApiProperty({
-    example: 'user@test.com',
+    example: 'test@test.com',
     description: 'Email',
     required: true,
   })
@@ -35,7 +39,7 @@ export class User extends UuidEntity {
   password!: string;
 
   @ApiProperty({
-    example: 'Ivan',
+    example: 'Elvis',
     description: 'Name',
     required: true,
   })
@@ -43,7 +47,7 @@ export class User extends UuidEntity {
   firstName!: string;
 
   @ApiProperty({
-    example: 'Ivanov',
+    example: 'Presley',
     description: 'Last name',
     required: true,
   })
@@ -73,12 +77,12 @@ export class User extends UuidEntity {
   @Column({ name: 'role_type' })
   roleType: UserRoles;
 
-  @ManyToOne(() => Role, (role) => role.users)
+  @ManyToOne(() => RoleEntity, (role) => role.users)
   @JoinColumn({ name: 'role_id' })
-  role: Role;
+  role: RoleEntity;
 
-  @OneToOne(() => Image, { nullable: true })
+  @OneToOne(() => ImageEntity, { nullable: true })
   @JoinColumn({ name: 'image_id' })
-  image?: Image;
+  image?: ImageEntity;
   user: ArrayBuffer;
 }

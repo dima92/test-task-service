@@ -1,6 +1,10 @@
-import { IsArray, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-import { UserRoles } from '../../../shared/types/user-roles.enum';
+import { IsNotEmpty, IsEnum, IsArray, IsString } from 'class-validator';
+
+// ========================== enums ======================================
 import { UserPermissions } from '../../../shared/types/user-permissions.enum';
+import { UserRoles } from '../../../shared/types/user-roles.enum';
+
+// ========================== swagger ====================================
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RoleDto {
@@ -13,7 +17,7 @@ export class RoleDto {
   @IsString()
   name: string;
 
-  @ApiProperty({ example: `admin`, description: 'Role type', required: true })
+  @ApiProperty({ example: 'admin', description: 'Role type', required: true })
   @IsNotEmpty()
   @IsEnum(UserRoles)
   type: UserRoles;

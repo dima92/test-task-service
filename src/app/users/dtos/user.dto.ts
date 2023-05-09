@@ -1,3 +1,4 @@
+// ========================== validator ==========================
 import {
   IsEmail,
   IsEnum,
@@ -5,15 +6,22 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUrl,
 } from 'class-validator';
-import { UuidDto } from '../../../shared/dto/uuid.dto';
-import { User } from '../entities/user.entity';
-import { UserRoles } from '../../../shared/types/user-roles.enum';
+
+// ========================== entities & dto's ==========================
+import { UserEntity } from '../entities/user.entity';
+import { UUIDDto } from 'src/shared/dtos/uuid.dto';
+
+// ========================== types ==========================
+import { UserRoles } from 'src/shared/types/user-roles.enum';
+
+// ========================== swagger ==========================
 import { ApiProperty } from '@nestjs/swagger';
 
-export class UserDto extends UuidDto {
+export class UserDto extends UUIDDto {
   @ApiProperty({
-    example: 'admin@test.com',
+    example: 'test@test.com',
     description: 'Email',
     required: true,
   })
@@ -22,7 +30,7 @@ export class UserDto extends UuidDto {
   email!: string;
 
   @ApiProperty({
-    example: 'Ivan',
+    example: 'Elvis',
     description: 'Name',
     required: true,
   })
@@ -31,7 +39,7 @@ export class UserDto extends UuidDto {
   firstName!: string;
 
   @ApiProperty({
-    example: 'Ivanov',
+    example: 'Presley',
     description: 'Last name',
     required: true,
   })
@@ -40,7 +48,7 @@ export class UserDto extends UuidDto {
   lastName!: string;
 
   @ApiProperty({
-    example: '12a45673',
+    example: '23b36309',
     description: 'Image id',
     required: false,
   })
@@ -58,7 +66,7 @@ export class UserDto extends UuidDto {
   @IsEnum(UserRoles)
   roleType?: UserRoles;
 
-  public static fromEntity(entity: User): UserDto {
+  public static fromEntity(entity: UserEntity): UserDto {
     return {
       id: entity.id,
       email: entity.email,

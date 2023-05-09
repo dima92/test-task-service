@@ -2,12 +2,16 @@ import { Controller, Get, HttpStatus, Param, Res } from '@nestjs/common';
 import { Readable } from 'stream';
 import { Response } from 'express';
 
+// ========================== services ==========================
 import { ImageService } from './image.service';
 
+// ========================== decorators ==========================
 import { AuthPermissionsGuard } from '../security/decorators/auth-permissions-guard.decorator';
 
+// ========================== enums ==========================
 import { UserPermissions } from 'src/shared/types/user-permissions.enum';
 
+// ========================== swagger ==========================
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Images controller')

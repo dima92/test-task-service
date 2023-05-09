@@ -8,8 +8,10 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
+// ========================== services ==========================
 import { SecurityService } from '../security.service';
 
+// ========================== types ==============================
 import { UserPermissions } from '../../../shared/types/user-permissions.enum';
 import { IRequest } from '../../../shared/types/request.interface';
 
@@ -35,7 +37,7 @@ export class RolesGuard implements CanActivate {
       throw new HttpException('User does not exist', HttpStatus.BAD_REQUEST);
     }
 
-    if (user.role.type === 'admin') return true;
+    if (user.role.type === 'superadmin') return true;
 
     const userPermissions = user.role.permissions;
 

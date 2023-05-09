@@ -1,29 +1,24 @@
-import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
+// ========================== modules ====================================
 import { AppModule } from './app.module';
-import 'dotenv/config';
 
-const PORT = process.env.PORT || 4000;
+// ========================== swagger ====================================
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-async function bootstrap() {
+const start = async () => {
   const app = await NestFactory.create(AppModule);
-
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
-  );
+  const port = process.env.PORT || 5000;
 
   const swagger = new DocumentBuilder()
-    .setTitle('Service test task from Ivashin')
-    .setDescription('NestJS test task')
+    .setTitle('Ivashin test task')
+    .setDescription('Node.js test task')
     .setVersion('0.0.1')
-    .addTag('Test task from Ivashin')
+    .addTag('Test task')
     .build();
 
   const document = SwaggerModule.createDocument(app, swagger);
   SwaggerModule.setup('swagger', app, document);
-
-  await app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-}
-bootstrap();
+  app.listen(port, () => console.log(`Server started from ${port}`));
+};
+start();

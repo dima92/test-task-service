@@ -1,6 +1,7 @@
+// ========================== swagger ====================================
 import { ApiProperty } from '@nestjs/swagger';
 
-export abstract class UuidDto {
+export abstract class UUIDDto {
   @ApiProperty({
     description: 'Entry id',
   })

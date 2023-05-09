@@ -3,29 +3,33 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 import jsPDF from 'jspdf';
 
-import { User } from './entities/user.entity';
-import { Role } from '../roles/entities/role.entity';
-import { UserAssignRoleDto } from './dto/user-assigne-role.dto';
-import { UserDto } from './dto/user.dto';
+// ========================== entities & dto's ==========================
+import { UserEntity } from './entities/user.entity';
+import { RoleEntity } from '../roles/entities/role.entity';
+import { UserAssignRoleDto } from './dtos/user-assigne-role.dto';
+import { UserDto } from './dtos/user.dto';
 
+// ========================== enums ==========================
 import { UserRoles } from '../../shared/types/user-roles.enum';
+
+// ========================== services ==========================
 import { ImageService } from '../image/image.service';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Role)
-    private readonly roleRepository: Repository<Role>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
     private readonly imageService: ImageService,
   ) {}
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<UserEntity[]> {
     return await this.userRepository.find();
   }
 
-  async getById(id: string): Promise<User> {
+  async getById(id: string): Promise<UserEntity> {
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
@@ -38,9 +42,9 @@ export class UserService {
   async deleteById(id: string): Promise<DeleteResult> {
     const user = await this.getById(id);
 
-    if (user.roleType === UserRoles.admin) {
+    if (user.roleType === UserRoles.superadmin) {
       throw new HttpException(
-        `It is not allowed to delete admin`,
+        `It is not allowed to delete superadmin`,
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
@@ -48,7 +52,7 @@ export class UserService {
     return await this.userRepository.delete(id);
   }
 
-  async updateUserProfile(userDto: UserDto, id: string): Promise<User> {
+  async updateUserProfile(userDto: UserDto, id: string): Promise<UserEntity> {
     const usersByEmail = await this.userRepository.findBy({
       email: userDto.email,
     });
@@ -74,12 +78,12 @@ export class UserService {
   async assignUserRole(
     assignUserRoleDto: UserAssignRoleDto,
     id: string,
-  ): Promise<User> {
+  ): Promise<UserEntity> {
     const user = await this.getById(id);
 
-    if (user.roleType === UserRoles.admin) {
+    if (user.roleType === UserRoles.superadmin) {
       throw new HttpException(
-        `It is not allowed to change admin role`,
+        `It is not allowed to change superadmin role`,
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
@@ -94,9 +98,9 @@ export class UserService {
       );
     }
 
-    if (newRole.type === UserRoles.admin) {
+    if (newRole.type === UserRoles.superadmin) {
       throw new HttpException(
-        `It is not allowed to assign admin role`,
+        `It is not allowed to assign superadmin role`,
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
@@ -107,7 +111,11 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  async addImage(id: string, image: Buffer, filename: string): Promise<User> {
+  async addImage(
+    id: string,
+    image: Buffer,
+    filename: string,
+  ): Promise<UserEntity> {
     if (!image || !filename)
       throw new HttpException(
         'File is neccessary',

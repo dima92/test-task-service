@@ -1,11 +1,13 @@
 import { Column, Entity } from 'typeorm';
 
-import { UuidEntity } from '../../../shared/entities/uuid.entity';
+// ========================== entities ==========================
+import { UUIDEntity } from '../../../shared/entities/uuid.entity';
 
+// ========================== swagger ==========================
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'images' })
-export class Image extends UuidEntity {
+export class ImageEntity extends UUIDEntity {
   @ApiProperty({
     example: 'awesome avatar',
     description: 'Image file name',

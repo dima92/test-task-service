@@ -18,19 +18,24 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Express, Response } from 'express';
 import { Readable } from 'stream';
 
+// ========================== decorators ==========================
 import { AuthPermissionsGuard } from '../security/decorators/auth-permissions-guard.decorator';
-import { UserDecorator } from './decorators/user.decorator';
+import { User } from './decorators/user.decorator';
 
-import { User } from './entities/user.entity';
-import { UserAssignRoleDto } from './dto/user-assigne-role.dto';
-import { UserDto } from './dto/user.dto';
-import { UserGeneratePdfDto } from './dto/user-generate-pdf.dto';
+// ========================== entities & dto's ==========================
+import { UserEntity } from './entities/user.entity';
+import { UserAssignRoleDto } from './dtos/user-assigne-role.dto';
+import { UserDto } from './dtos/user.dto';
+import { UserGeneratePdfDto } from './dtos/user-generate-pdf.dto';
 
+// ========================== enums ==========================
 import { UserPermissions } from '../../shared/types/user-permissions.enum';
 
+// ========================== services ==========================
 import { UserService } from './user.service';
 import { ImageService } from '../image/image.service';
 
+// ========================== swagger ==========================
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users controller')
@@ -41,6 +46,7 @@ export class UserController {
     private readonly imageService: ImageService,
   ) {}
 
+  //=========== get all users ===========
   @Get()
   @AuthPermissionsGuard(UserPermissions.getAllUsers)
   @ApiOperation({ summary: 'Get all users' })
@@ -55,6 +61,7 @@ export class UserController {
     return usersFromDB.map((user) => UserDto.fromEntity(user));
   }
 
+  //=========== get current user profile ===========
   @Get('/profile')
   @AuthPermissionsGuard(UserPermissions.getUserProfile)
   @ApiOperation({ summary: 'Get current user profile' })
@@ -63,12 +70,13 @@ export class UserController {
     description: 'HttpStatus:200:OK',
     type: UserDto,
   })
-  async getCurrentUser(@UserDecorator() user: UserDto): Promise<UserDto> {
+  async getCurrentUser(@User() user: UserDto): Promise<UserDto> {
     const userFromDB = await this.userService.getById(user.id);
 
     return UserDto.fromEntity(userFromDB);
   }
 
+  //=========== update current user data ===========
   @Put('/profile')
   @AuthPermissionsGuard(UserPermissions.updateUserProfile)
   @ApiOperation({ summary: 'Update current user profile' })
@@ -79,7 +87,7 @@ export class UserController {
   })
   @UsePipes(new ValidationPipe())
   async updateUserProfile(
-    @UserDecorator() user: UserDto,
+    @User() user: UserDto,
     @Body() userDto: UserDto,
   ): Promise<UserDto> {
     const updatedUser = await this.userService.updateUserProfile(
@@ -90,6 +98,7 @@ export class UserController {
     return UserDto.fromEntity(updatedUser);
   }
 
+  //=========== upload current user image ===========
   @Post('/image')
   @AuthPermissionsGuard(UserPermissions.updateUserProfile)
   @ApiOperation({ summary: 'Upload current user image' })
@@ -101,7 +110,7 @@ export class UserController {
   @UsePipes(new ValidationPipe())
   @UseInterceptors(FileInterceptor('file'))
   async uploadUserImage(
-    @UserDecorator() user: UserDto,
+    @User() user: UserDto,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<UserDto> {
     const updatedUser = await this.userService.addImage(
@@ -113,6 +122,7 @@ export class UserController {
     return UserDto.fromEntity(updatedUser);
   }
 
+  //=========== get current user image ===========
   @Get('/image')
   @AuthPermissionsGuard(UserPermissions.getUserProfile)
   @ApiOperation({ summary: 'Get current user image' })
@@ -120,10 +130,7 @@ export class UserController {
     status: HttpStatus.OK,
     description: 'HttpStatus:200:OK',
   })
-  async getCurrentUserImage(
-    @UserDecorator() user: UserDto,
-    @Res() response: Response,
-  ) {
+  async getCurrentUserImage(@User() user: UserDto, @Res() response: Response) {
     const userFromDb = await this.userService.getById(user.id);
     const image = await this.imageService.getById(userFromDb.imageId);
 
@@ -131,6 +138,7 @@ export class UserController {
     stream.pipe(response);
   }
 
+  //=========== generate current user pdf ===========
   @Post('/pdf')
   @AuthPermissionsGuard(UserPermissions.updateUserProfile)
   @ApiOperation({ summary: 'Generate current user pdf' })
@@ -144,6 +152,7 @@ export class UserController {
     return await this.userService.generatePdf(generatePdfDto.email);
   }
 
+  //=========== get current user pdf ===========
   @Get('/pdf')
   @AuthPermissionsGuard(UserPermissions.getUserProfile)
   @ApiOperation({ summary: 'Get current user pdf' })
@@ -151,16 +160,14 @@ export class UserController {
     status: HttpStatus.OK,
     description: 'HttpStatus:200:OK',
   })
-  async getCurrentUserPdf(
-    @UserDecorator() user: UserDto,
-    @Res() response: Response,
-  ) {
+  async getCurrentUserPdf(@User() user: UserDto, @Res() response: Response) {
     const pdf = await this.userService.getPdf(user.id);
 
     const stream = Readable.from(pdf);
     stream.pipe(response);
   }
 
+  //=========== assign role to user by userId ===========
   @Post('/assign-role/:id')
   @AuthPermissionsGuard(UserPermissions.assignRoleById)
   @ApiOperation({ summary: 'Assign role to user by id' })
@@ -182,6 +189,7 @@ export class UserController {
     return UserDto.fromEntity(updatedUser);
   }
 
+  //=========== get user by id ===========
   @Get('/:id')
   @AuthPermissionsGuard(UserPermissions.getUserById)
   @ApiOperation({ summary: 'Get user by id (admin)' })
@@ -196,13 +204,14 @@ export class UserController {
     return UserDto.fromEntity(userFromDB);
   }
 
+  //=========== delete user by id ===========
   @Delete('/:id')
   @AuthPermissionsGuard(UserPermissions.deleteUserById)
   @ApiOperation({ summary: 'Delete user by id' })
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'HttpStatus:200:OK',
-    type: User,
+    type: UserEntity,
   })
   @UsePipes(new ValidationPipe())
   async deleteUserById(@Param('id') id: string): Promise<DeleteResult> {

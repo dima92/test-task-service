@@ -28,7 +28,8 @@
     "typeorm:generate-migration": "npm run typeorm -- -d ./src/config/data-source.ts migration:generate ./migrations/$migration",
     "typeorm:create-migration": "npm run typeorm -- migration:create ./migrations/$migration",
     "typeorm:revert-migration": "npm run typeorm -- -d ./src/config/data-source.ts migration:revert",
-    "drop-db": "npm run typeorm schema:drop -- -d ./src/config/data-source.ts"
+    "drop-db": "npm run typeorm schema:drop -- -d ./src/config/data-source.ts",
+    "start-docker-container": "npm run typeorm migration:run -- -d ./src/config/data-source.ts && nest start --watch"
   },
   "dependencies": {
     "@nestjs/common": "^9.4.0",

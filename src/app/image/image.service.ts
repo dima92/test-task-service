@@ -2,16 +2,17 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Image } from './entities/image.entity';
+// ========================== entities ==========================
+import { ImageEntity } from './entities/image.entity';
 
 @Injectable()
 export class ImageService {
   constructor(
-    @InjectRepository(Image)
-    private readonly imageRepository: Repository<Image>,
+    @InjectRepository(ImageEntity)
+    private readonly imageRepository: Repository<ImageEntity>,
   ) {}
 
-  async uploadImage(image: Buffer, filename: string): Promise<Image> {
+  async uploadImage(image: Buffer, filename: string): Promise<ImageEntity> {
     const newImage = this.imageRepository.create({
       created: new Date(),
       updated: new Date(),
@@ -22,7 +23,7 @@ export class ImageService {
     return await this.imageRepository.save(newImage);
   }
 
-  async getById(id: string): Promise<Image> {
+  async getById(id: string): Promise<ImageEntity> {
     if (!id) throw new NotFoundException();
 
     const image = await this.imageRepository.findOneBy({ id });

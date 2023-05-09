@@ -2,19 +2,21 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 
-import { RoleDto } from './dto/role.dto';
+// ========================== dto's & types ==========================
+import { RoleDto } from './dtos/role.dto';
 import { UserRoles } from '../../shared/types/user-roles.enum';
 
-import { Role } from './entities/role.entity';
+// ========================== entities ===============================
+import { RoleEntity } from './entities/role.entity';
 
 @Injectable()
 export class RoleService {
   constructor(
-    @InjectRepository(Role)
-    private readonly roleRepository: Repository<Role>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
   ) {}
 
-  async createRole(createRoleDto: RoleDto): Promise<Role> {
+  async createRole(createRoleDto: RoleDto): Promise<RoleEntity> {
     const existedRole = await this.roleRepository.findOneBy({
       name: createRoleDto.name,
     });
@@ -26,9 +28,9 @@ export class RoleService {
       );
     }
 
-    if (createRoleDto.type === UserRoles.admin) {
+    if (createRoleDto.type === UserRoles.superadmin) {
       throw new HttpException(
-        `It is not allowed to create roles with admin type`,
+        `It is not allowed to create roles with superadmin type`,
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
@@ -44,11 +46,11 @@ export class RoleService {
     return await this.roleRepository.save(newRole);
   }
 
-  async getAll(): Promise<Role[]> {
+  async getAll(): Promise<RoleEntity[]> {
     return await this.roleRepository.find();
   }
 
-  async getRoleById(id: string): Promise<Role> {
+  async getRoleById(id: string): Promise<RoleEntity> {
     const role = await this.roleRepository.findOneBy({ id: +id });
 
     if (!role) {
@@ -61,9 +63,9 @@ export class RoleService {
   async deleteRole(id: string): Promise<DeleteResult> {
     const role = await this.roleRepository.findOneBy({ id: +id });
 
-    if (role.type === UserRoles.admin) {
+    if (role.type === UserRoles.superadmin) {
       throw new HttpException(
-        `It is not allowed to delete admin role`,
+        `It is not allowed to delete superadmin role`,
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
@@ -71,13 +73,14 @@ export class RoleService {
     return await this.roleRepository.delete({ id: +id });
   }
 
-  async updateRole(id: string, roleDto: RoleDto): Promise<Role> {
+  async updateRole(id: string, roleDto: RoleDto): Promise<RoleEntity> {
     const role = await this.roleRepository.findOneBy({ id: +id });
 
     if (!role) {
       throw new HttpException(`Role does not exist`, HttpStatus.BAD_REQUEST);
     }
 
+    // check if role with name that supposed to be assigned already exists
     const rolesByName = await this.roleRepository.findBy({
       name: roleDto.name,
     });

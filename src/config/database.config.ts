@@ -1,11 +1,14 @@
 import 'dotenv/config';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
-import { User } from '../app/user/entities/user.entity';
-import { Role } from '../app/roles/entities/role.entity';
-import { Image } from '../app/image/entities/image.entity';
+// ========================== entities ==========================
+import { UserEntity } from '../app/users/entities/user.entity';
+import { RoleEntity } from '../app/roles/entities/role.entity';
+import { ImageEntity } from '../app/image/entities/image.entity';
 
-import { $migration1683511464095 } from '../../migrations/1683511464095-$migration';
+// ========================== migrations ==========================
+import { $migration1683541698398 } from '../../migrations/1683541698398-$migration';
+import { $migration1683544503000 } from '../../migrations/1683544503000-$migration';
 
 const databaseConfig: PostgresConnectionOptions = {
   type: 'postgres',
@@ -14,9 +17,9 @@ const databaseConfig: PostgresConnectionOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  entities: [User, Role, Image],
+  entities: [UserEntity, RoleEntity, ImageEntity],
   synchronize: false,
-  migrations: [$migration1683511464095],
+  migrations: [$migration1683541698398, $migration1683544503000],
 };
 
 export default databaseConfig;

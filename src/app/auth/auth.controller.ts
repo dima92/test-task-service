@@ -9,18 +9,21 @@ import {
 } from '@nestjs/common';
 
 // ========================== dto & enum ==========================
-import { UserSignInDto } from './dto/user-sign-in.dto';
-import { TokenDto } from '../security/dto/token.dto';
-import { UserDto } from '../user/dto/user.dto';
-import { UserSignUpDto } from './dto/user-sign-up.dto';
+import { UserSignInDto } from './dtos/user-sign-in.dto';
+import { TokenDto } from '../security/dtos/token.dto';
+import { UserDto } from '../users/dtos/user.dto';
+import { UserSignUpDto } from './dtos/user-sign-up.dto';
 import { UserPermissions } from '../../shared/types/user-permissions.enum';
 
+// ========================== services ====================
 import { AuthService } from './auth.service';
 import { SecurityService } from '../security/security.service';
 
+// ========================== decorators ====================
 import { AuthPermissionsGuard } from '../security/decorators/auth-permissions-guard.decorator';
-import { UserDecorator } from '../user/decorators/user.decorator';
+import { User } from '../users/decorators/user.decorator';
 
+// ========================== swagger ==========================
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Authentication')
@@ -57,7 +60,7 @@ export class AuthController {
 
   @Get('/refresh-token')
   @AuthPermissionsGuard(UserPermissions.refreshToken)
-  async refreshToken(@UserDecorator() currentUser: UserDto): Promise<TokenDto> {
+  async refreshToken(@User() currentUser: UserDto): Promise<TokenDto> {
     const user = await this.securityService.getUserWithRole(currentUser.id);
 
     return this.securityService.generateJwt(user);

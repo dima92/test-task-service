@@ -1,15 +1,18 @@
 import { Column, Entity, Index, OneToMany } from 'typeorm';
 
-import { IdEntity } from '../../../shared/entities/id.entity';
-import { User } from '../../user/entities/user.entity';
+// ========================== entities ==================================
+import { IDEntity } from '../../../shared/entities/id.entity';
+import { UserEntity } from '../../users/entities/user.entity';
 
+// ========================== enums ======================================
 import { UserRoles } from '../../../shared/types/user-roles.enum';
 import { UserPermissions } from '../../../shared/types/user-permissions.enum';
 
+// ========================== swagger ====================================
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity({ name: 'user_roles' })
-export class Role extends IdEntity {
+export class RoleEntity extends IDEntity {
   @ApiProperty({ example: 'admin', description: 'Role type', required: true })
   @Index()
   @Column({ name: 'type', enum: UserRoles })
@@ -32,6 +35,6 @@ export class Role extends IdEntity {
   @Column('text', { name: 'permissions', array: true })
   permissions: UserPermissions[];
 
-  @OneToMany(() => User, (user) => user.id)
-  users?: User[];
+  @OneToMany(() => UserEntity, (user) => user.id)
+  users?: UserEntity[];
 }

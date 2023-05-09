@@ -3,29 +3,31 @@ import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { User } from '../user/entities/user.entity';
-import { Role } from '../roles/entities/role.entity';
+// ========================== repository & entities ==========================
+import { UserEntity } from '../users/entities/user.entity';
+import { RoleEntity } from '../roles/entities/role.entity';
 
-import { UserDto } from '../user/dto/user.dto';
-import { TokenDto } from './dto/token.dto';
+// ========================== dto ==========================
+import { UserDto } from '../users/dtos/user.dto';
+import { TokenDto } from './dtos/token.dto';
 
 @Injectable()
 export class SecurityService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Role)
-    private readonly roleRepository: Repository<Role>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
     private readonly jwtService: JwtService,
   ) {}
 
-  generateJwt(user: User): TokenDto {
+  generateJwt(user: UserEntity): TokenDto {
     const payload = UserDto.fromEntity(user);
     const token = this.jwtService.sign(payload);
     return { token };
   }
 
-  async getUserWithRole(id: string): Promise<User> {
+  async getUserWithRole(id: string): Promise<UserEntity> {
     const user = await this.userRepository.findOne({
       where: {
         id,

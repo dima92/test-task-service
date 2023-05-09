@@ -1,11 +1,13 @@
 import * as dotenv from 'dotenv';
 dotenv.config();
 
+// ========================== nest ==========================
 import { Injectable } from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 
-import { UserDto } from '../user/dto/user.dto';
+// ========================== dto ==========================
+import { UserDto } from '../users/dtos/user.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -13,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET_KEY,
+      secretOrKey: process.env.PRIVATE_KEY,
     });
   }
 

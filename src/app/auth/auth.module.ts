@@ -1,16 +1,20 @@
+// ========================== nest ==========================
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { User } from '../user/entities/user.entity';
-import { Role } from '../roles/entities/role.entity';
+// ========================== entities ==========================
+import { UserEntity } from '../users/entities/user.entity';
+import { RoleEntity } from '../roles/entities/role.entity';
 
+// ========================== srvices & controllers ====================
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
+// ========================== modules ===================================
 import { SecurityModule } from '../security/security.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Role]), SecurityModule],
+  imports: [TypeOrmModule.forFeature([UserEntity, RoleEntity]), SecurityModule],
   providers: [AuthService],
   exports: [AuthService],
   controllers: [AuthController],
